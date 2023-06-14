@@ -1,0 +1,89 @@
+User
+	id:int
+	username:String
+	password:String
+	profilePicture:Image
+	dietaryPreferences:List<String>
+	recipes:List<Recipe>
+	recipeCollections:List<RecipeCollection>
+	+register()
+	+login()
+	+logout()
+	+saveRecipe(recipe:Recipe)
+	+createCollection(collection:RecipeCollection)
+	+addRecipeToCollection(collectionId:String,recipe:Recipe)
+	+removeRecipeFromCollection(collectionId:String,recipeId:String)
+
+Recipe
+	id:int
+	name:String
+	description:String
+	cookingTime:Duration
+	difficulty:String
+	servingSize:int
+	nutritionalInfo:NutritionalInfo
+	ingredientList:List<Ingredient>
+	instructions:List<String>
+	images:List<Image>
+	comments:List<Comment>
+	ratings:List<Rating>
+	calories:int
+	fat:double
+	carbohydrates:double
+	protein:double
+	+addIngredient(ingredient:Ingredient)
+	+removeIngredient(ingredient:Ingredient)
+	+addInstruction(instruction:String)
+	+removeInstruction(instruction:String)
+	+addImage(image:Image)
+	+removeImage(image:Image)
+	+addComment(comment:Comment)
+	+removeComment(comment:Comment)
+	+addRating(rating:Rating)
+	+removeRating(rating:Rating)
+	+updateCalories()
+	+updateFat()
+	+updateCarbohydrates()
+	+updateProtein()
+
+Ingredient
+	id:int
+	recipeId:int
+	name:String
+	quantity:double
+	unit:String
+	+updateName()
+	+updateQuantity()
+	+updateUnit()
+
+RecipeCollection
+	id:int
+	name:String
+	recipes:List<Recipe>
+	+updateName()
+	+addRecipe(recipe:Recipe)
+	+removeRecipe(recipe:Recipe)
+
+Comment
+	id:int
+	userId:int
+	recipeId:int
+	text:String
+	timestamp:DateTime
+	+updateText()
+
+Rating
+	id:int
+	recipeId:int
+	userId:int
+	value:double
+	updateValue:int
+
+User --> Recipe
+Recipe --> Ingredient
+Recipe -->Comment
+Recipe -->Rating
+User --> RecipeCollection
+RecipeCollection --> Recipe
+User --> Comment
+User -->Rating
