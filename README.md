@@ -4,7 +4,7 @@ The Food Recipe App is an application that allows users to discover, save, and s
 It provides a platform for users to explore a wide range of recipes,
 access detailed instructions and ingredient lists, and create personalized recipe collections.
 
-## user stories
+## User stories
 As a user, I want to be able to register an account with my username and password so that I can have a personalized experience in the app.
 
 As a user, I want to be able to log in securely with my credentials so that I can access my saved recipe collections.

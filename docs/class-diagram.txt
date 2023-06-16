@@ -21,7 +21,6 @@ Recipe
 	cookingTime:Duration
 	difficulty:String
 	servingSize:int
-	nutritionalInfo:NutritionalInfo
 	ingredientList:List<Ingredient>
 	instructions:List<String>
 	images:List<Image>

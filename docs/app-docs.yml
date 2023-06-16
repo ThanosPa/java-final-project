@@ -1,0 +1,643 @@
+openapi: 3.0.3
+info:
+  title: Food Recipe API
+  description: API documentation for the Food Recipe App
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+
+tags:
+  - name: users
+    description: Endpoints related to users
+  - name: recipes
+    description: Endpoints related to recipes
+  - name: collections
+    description: Endpoints related to recipe collections
+
+paths:
+  /users:
+    post:
+      tags:
+        - users
+      summary: Create a new user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+      responses:
+        201:
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+
+  /login:
+    post:
+      tags:
+        - users
+      summary: User login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        200:
+          description: User logged in successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+
+  /logout:
+    post:
+      tags:
+        - users
+      summary: User logout
+      responses:
+        200:
+          description: User logged out successfully
+
+  /users/{userId}:
+    get:
+      tags:
+        - users
+      summary: Get user details
+      parameters:
+        - name: userId
+          in: path
+          description: ID of the user to retrieve
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: User details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+
+    put:
+      tags:
+        - users
+      summary: Update user details
+      parameters:
+        - name: userId
+          in: path
+          description: ID of the user to update
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        200:
+          description: User details updated successfully
+
+  /users/{userId}/recipes:
+    get:
+      tags:
+        - users
+      summary: Get recipes saved by a user
+      parameters:
+        - name: userId
+          in: path
+          description: ID of the user
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: List of recipes retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecipeListResponse'
+
+    post:
+      tags:
+        - users
+      summary: Save a recipe for a user
+      parameters:
+        - name: userId
+          in: path
+          description: ID of the user
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaveRecipeRequest'
+      responses:
+        201:
+          description: Recipe saved successfully
+
+  /users/{userId}/recipes/{recipeId}:
+    delete:
+      tags:
+        - users
+      summary: Remove a saved recipe for a user
+      parameters:
+        - name: userId
+          in: path
+          description: ID of the user
+          required: true
+          schema:
+            type: integer
+        - name: recipeId
+          in: path
+          description: ID of the recipe to remove
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Recipe removed successfully
+
+  /users/{userId}/collections:
+    get:
+      tags:
+        - collections
+      summary: Get recipe collections of a user
+      parameters:
+        - name: userId
+          in: path
+          description: ID of the user
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: List of recipe collections retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectionListResponse'
+
+    post:
+      tags:
+        - collections
+      summary: Create a new recipe collection for a user
+      parameters:
+        - name: userId
+          in: path
+          description: ID of the user
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCollectionRequest'
+      responses:
+        201:
+          description: Recipe collection created successfully
+
+  /users/{userId}/collections/{collectionId}:
+    put:
+      tags:
+        - collections
+      summary: Update a recipe collection
+      parameters:
+        - name: userId
+          in: path
+          description: ID of the user
+          required: true
+          schema:
+            type: integer
+        - name: collectionId
+          in: path
+          description: ID of the collection to update
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCollectionRequest'
+      responses:
+        200:
+          description: Recipe collection updated successfully
+
+  /users/{userId}/collections/{collectionId}/recipes:
+    post:
+      tags:
+        - collections
+      summary: Add a recipe to a collection
+      parameters:
+        - name: userId
+          in: path
+          description: ID of the user
+          required: true
+          schema:
+            type: integer
+        - name: collectionId
+          in: path
+          description: ID of the collection
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddRecipeToCollectionRequest'
+      responses:
+        201:
+          description: Recipe added to collection successfully
+
+  /users/{userId}/collections/{collectionId}/recipes/{recipeId}:
+    delete:
+      tags:
+        - collections
+      summary: Remove a recipe from a collection
+      parameters:
+        - name: userId
+          in: path
+          description: ID of the user
+          required: true
+          schema:
+            type: integer
+        - name: collectionId
+          in: path
+          description: ID of the collection
+          required: true
+          schema:
+            type: integer
+        - name: recipeId
+          in: path
+          description: ID of the recipe to remove
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Recipe removed from collection successfully
+
+  /recipes:
+    get:
+      tags:
+        - recipes
+      summary: Get a list of recipes
+      responses:
+        200:
+          description: List of recipes retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecipeListResponse'
+
+    post:
+      tags:
+        - recipes
+      summary: Create a new recipe
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRecipeRequest'
+      responses:
+        201:
+          description: Recipe created successfully
+
+  /recipes/{recipeId}:
+    get:
+      tags:
+        - recipes
+      summary: Get recipe details
+      parameters:
+        - name: recipeId
+          in: path
+          description: ID of the recipe to retrieve
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Recipe details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecipeResponse'
+
+    put:
+      tags:
+        - recipes
+      summary: Update a recipe
+      parameters:
+        - name: recipeId
+          in: path
+          description: ID of the recipe to update
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRecipeRequest'
+      responses:
+        200:
+          description: Recipe updated successfully
+
+    delete:
+      tags:
+        - recipes
+      summary: Delete a recipe
+      parameters:
+        - name: recipeId
+          in: path
+          description: ID of the recipe to delete
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Recipe deleted successfully
+
+  /recipes/{recipeId}/ingredients:
+    post:
+      tags:
+        - recipes
+      summary: Add an ingredient to a recipe
+      parameters:
+        - name: recipeId
+          in: path
+          description: ID of the recipe
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddIngredientRequest'
+      responses:
+        201:
+          description: Ingredient added to recipe successfully
+
+  /recipes/{recipeId}/ingredients/{ingredientId}:
+    put:
+      tags:
+        - recipes
+      summary: Update an ingredient in a recipe
+      parameters:
+        - name: recipeId
+          in: path
+          description: ID of the recipe
+          required: true
+          schema:
+            type: integer
+        - name: ingredientId
+          in: path
+          description: ID of the ingredient to update
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateIngredientRequest'
+      responses:
+        200:
+          description: Ingredient updated successfully
+
+    delete:
+      tags:
+        - recipes
+      summary: Remove an ingredient from a recipe
+      parameters:
+        - name: recipeId
+          in: path
+          description: ID of the recipe
+          required: true
+          schema:
+            type: integer
+        - name: ingredientId
+          in: path
+          description: ID of the ingredient to remove
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Ingredient removed from recipe successfully
+
+  /recipes/{recipeId}/instructions:
+    post:
+      tags:
+        - recipes
+      summary: Add an instruction to a recipe
+      parameters:
+        - name: recipeId
+          in: path
+          description: ID of the recipe
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddInstructionRequest'
+      responses:
+        201:
+          description: Instruction added to recipe successfully
+
+  /recipes/{recipeId}/instructions/{instructionId}:
+    put:
+      tags:
+        - recipes
+      summary: Update an instruction in a recipe
+      parameters:
+        - name: recipeId
+          in: path
+          description: ID of the recipe
+          required: true
+          schema:
+            type: integer
+        - name: instructionId
+          in: path
+          description: ID of the instruction to update
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateInstructionRequest'
+      responses:
+        200:
+          description: Instruction updated successfully
+
+    delete:
+      tags:
+        - recipes
+      summary: Remove an instruction from a recipe
+      parameters:
+        - name: recipeId
+          in: path
+          description: ID of the recipe
+          required: true
+          schema:
+            type: integer
+        - name: instructionId
+          in: path
+          description: ID of the instruction to remove
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Instruction removed from recipe successfully
+
+  /recipes/{recipeId}/comments:
+    post:
+      tags:
+        - recipes
+      summary: Add a comment to a recipe
+      parameters:
+        - name: recipeId
+          in: path
+          description: ID of the recipe
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddCommentRequest'
+      responses:
+        201:
+          description: Comment added to recipe successfully
+
+  /recipes/{recipeId}/comments/{commentId}:
+    put:
+      tags:
+        - recipes
+      summary: Update a comment in a recipe
+      parameters:
+        - name: recipeId
+          in: path
+          description: ID of the recipe
+          required: true
+          schema:
+            type: integer
+        - name: commentId
+          in: path
+          description: ID of the comment to update
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCommentRequest'
+      responses:
+        200:
+          description: Comment updated successfully
+
+    delete:
+      tags:
+        - recipes
+      summary: Remove a comment from a recipe
+      parameters:
+        - name: recipeId
+          in: path
+          description: ID of the recipe
+          required: true
+          schema:
+            type: integer
+        - name: commentId
+          in: path
+          description: ID of the comment to remove
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Comment removed from recipe successfully
+
+  /recipes/{recipeId}/ratings:
+    post:
+      tags:
+        - recipes
+      summary: Add a rating to a recipe
+      parameters:
+        - name: recipeId
+          in: path
+          description: ID of the recipe
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddRatingRequest'
+      responses:
+        201:
+          description: Rating added to recipe successfully
+
+  /recipes/{recipeId}/ratings/{ratingId}:
+    put:
+      tags:
+        - recipes
+      summary: Update a rating in a recipe
+      parameters:
+        - name: recipeId
+          in: path
+          description: ID of the recipe
+          required: true
+          schema:
+            type: integer
+        - name: ratingId
+          in: path
+          description: ID of the rating to update
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRatingRequest'
+      responses:
+        200:
+          description: Rating updated successfully
+
+    delete:
+      tags:
+        - recipes
+      summary: Remove a rating from a recipe
+      parameters:
+        - name: recipeId
+          in: path
+          description: ID of the recipe
+          required: true
+          schema:
+            type: integer
+        - name: ratingId
+          in: path
+          description: ID of the rating to remove
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Rating removed from recipe successfully
