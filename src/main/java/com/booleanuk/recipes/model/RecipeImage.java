@@ -2,8 +2,16 @@ package com.booleanuk.recipes.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "recipe_images")
 public class RecipeImage {
     @Id
@@ -19,9 +27,6 @@ public class RecipeImage {
     @JsonIgnoreProperties("recipe_images")
     private Recipe recipe;
 
-    public RecipeImage() {
-        super();
-    }
 
     public int getId() {
         return id;

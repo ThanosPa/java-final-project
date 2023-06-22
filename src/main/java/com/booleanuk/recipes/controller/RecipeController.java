@@ -1,12 +1,21 @@
 package com.booleanuk.recipes.controller;
 
+import com.booleanuk.recipes.ImageUtil;
 import com.booleanuk.recipes.model.*;
 import com.booleanuk.recipes.repository.RecipeRepository;
+import com.booleanuk.recipes.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,6 +25,8 @@ public class RecipeController {
 
     @Autowired
     private RecipeRepository recipeRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @GetMapping
     public ResponseEntity<List<Recipe>> getAllRecipes() {
@@ -34,9 +45,50 @@ public class RecipeController {
         }
     }
 
-    @PostMapping
-    public ResponseEntity<Recipe> createRecipe(@RequestBody Recipe recipe) {
-        Recipe createdRecipe = recipeRepository.save(recipe);
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Recipe> createRecipe(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam("name") String name,
+           @RequestParam("description") String description,
+           @RequestParam("cooking_time") int cookingTime,
+           @RequestParam("difficulty") String difficulty,
+           @RequestParam("serving_size") int servingSize,
+           @RequestParam("calories") int calories,
+           @RequestParam("fat") double fat,
+           @RequestParam("carbohydrates") double carbohydrates,
+           @RequestParam("protein") double protein
+           //@RequestParam("image") MultipartFile image
+    )  {
+        Recipe newRecipe = new Recipe();
+        newRecipe.setName(name);
+        newRecipe.setDescription(description);
+        Duration cooking_time_duration= Duration.ofMinutes(cookingTime);
+        newRecipe.setCookingTime(cooking_time_duration);
+        newRecipe.setDifficulty(difficulty);
+        newRecipe.setServingSize(servingSize);
+        newRecipe.setCalories(calories);
+        newRecipe.setFat(fat);
+        newRecipe.setCarbohydrates(carbohydrates);
+        newRecipe.setProtein(protein);
+        Optional<User> user = userRepository.findByEmail(userDetails.getUsername());
+        Recipe createdRecipe= null;
+        if(user.isPresent()){
+            newRecipe.setUser(user.get());
+             createdRecipe = recipeRepository.save(newRecipe);
+
+        }
+//        if (!image.isEmpty()) {
+//            // Save or process the image
+//            RecipeImage newRecipeImage= RecipeImage.builder()
+//                    .image(ImageUtil.compressImage(image.getBytes())).build();
+//            List<RecipeImage> recipeImageList = new ArrayList<>();
+//            recipeImageList.add(newRecipeImage);
+//            newRecipe.setImages(recipeImageList);
+//        }
+
+
+        // Save the recipe using the service class
+        //recipeRepository.save(newRecipe);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdRecipe);
     }
 

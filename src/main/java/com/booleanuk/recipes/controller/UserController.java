@@ -3,6 +3,7 @@ package com.booleanuk.recipes.controller;
 import com.booleanuk.recipes.model.Recipe;
 import com.booleanuk.recipes.model.RecipeCollection;
 import com.booleanuk.recipes.model.User;
+import com.booleanuk.recipes.repository.RecipeCollectionRepository;
 import com.booleanuk.recipes.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,8 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private RecipeCollectionRepository recipeCollectionRepository;
 
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody User user) {
@@ -49,7 +52,7 @@ public class UserController {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-            user.setUsername(updatedUser.getUsername());
+            user.setEmail(updatedUser.getEmail());
             user.setPassword(updatedUser.getPassword());
             // Update other user details as needed
             User updated = userRepository.save(user);
@@ -158,7 +161,7 @@ public class UserController {
             if (collectionOptional.isPresent()) {
                 RecipeCollection collection = collectionOptional.get();
                 collection.getRecipes().add(recipe);
-                userRepository.save(user);
+                recipeCollectionRepository.save(collection);
                 return ResponseEntity.status(HttpStatus.CREATED).build();
             } else {
                 return ResponseEntity.notFound().build();

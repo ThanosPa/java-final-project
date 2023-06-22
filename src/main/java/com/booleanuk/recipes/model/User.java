@@ -24,9 +24,11 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name = "username", nullable = false)
-    private String username;
-    @Column(name = "email",unique = true,nullable = false)
+    @Column(name = "first_name")
+    private String firstName;
+    @Column(name = "last_name")
+    private String lastName;
+    @Column(name = "email", unique = true, nullable = false)
     private String email;
     @Column(name = "password")
     private String password;
@@ -38,18 +40,10 @@ public class User implements UserDetails {
     private List<Recipe> recipes;
     @OneToMany(mappedBy = "user")
     private List<Comment> comments;
-
     @OneToMany(mappedBy = "user")
     private List<Rating> ratings;
     @Enumerated(EnumType.STRING)
     private Role role;
-
-    public User(String username, String email, String password) {
-        this.username = username;
-        this.email = email;
-        this.password = password;
-    }
-
 
 
     @Override
@@ -77,6 +71,11 @@ public class User implements UserDetails {
         return true;
     }
 
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
+
     public int getId() {
         return id;
     }
@@ -85,13 +84,20 @@ public class User implements UserDetails {
         this.id = id;
     }
 
-    @Override
-    public String getUsername() {
-        return username;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getEmail() {
