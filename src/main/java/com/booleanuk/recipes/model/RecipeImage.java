@@ -1,5 +1,6 @@
 package com.booleanuk.recipes.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -18,15 +19,25 @@ public class RecipeImage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Lob
-    @Column(name = "image", length = 10000)
+    //@Lob
+    @Column(name = "image", length = 10000000)
     private byte[] image;
 
     @ManyToOne
     @JoinColumn(name = "recipe_id", nullable = false)
-    @JsonIgnoreProperties("recipe_images")
+    @JsonIgnore
     private Recipe recipe;
 
+    @Column(name = "image_url")
+    private String imageUrl;
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 
     public int getId() {
         return id;
@@ -36,6 +47,7 @@ public class RecipeImage {
         this.id = id;
     }
 
+    @Lob
     public byte[] getImage() {
         return image;
     }

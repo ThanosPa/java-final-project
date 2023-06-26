@@ -1,9 +1,11 @@
 package com.booleanuk.recipes.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -44,9 +46,24 @@ public class Recipe {
     private List<Ingredient> ingredients;
     @OneToMany(mappedBy = "recipe")
     private List<Instruction> instructions;
-    @OneToMany(mappedBy = "recipe")
-    private List<RecipeImage> images;
+    @OneToMany(mappedBy = "recipe", fetch = FetchType.LAZY)
+    @JsonIgnore
+    @JsonIgnoreProperties("recipe")
 
+    private List<RecipeImage> images = new ArrayList<>();
+
+    @Transient
+    private List<String> imageUrls;
+
+    // ... other fields, getters, and setters ...
+
+    public List<String> getImageUrls() {
+        return imageUrls;
+    }
+
+    public void setImageUrls(List<String> imageUrls) {
+        this.imageUrls = imageUrls;
+    }
     public Recipe() {
         super();
     }

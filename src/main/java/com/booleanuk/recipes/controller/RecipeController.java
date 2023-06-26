@@ -2,8 +2,11 @@ package com.booleanuk.recipes.controller;
 
 import com.booleanuk.recipes.ImageUtil;
 import com.booleanuk.recipes.model.*;
+import com.booleanuk.recipes.repository.RecipeImageRepository;
 import com.booleanuk.recipes.repository.RecipeRepository;
 import com.booleanuk.recipes.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -18,6 +21,8 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/recipes")
@@ -27,10 +32,23 @@ public class RecipeController {
     private RecipeRepository recipeRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private RecipeImageRepository recipeImageRepository;
+    @Autowired
+    private HttpServletRequest request;
 
+    @Autowired
+    private SessionFactory sessionFactory;
     @GetMapping
     public ResponseEntity<List<Recipe>> getAllRecipes() {
+
         List<Recipe> recipes = recipeRepository.findAll();
+        for (Recipe recipe : recipes) {
+            List<String> imageUrls = recipe.getImages().stream()
+                    .map(RecipeImage::getImageUrl)
+                    .collect(Collectors.toList());
+            recipe.setImageUrls(imageUrls);
+        }
         return ResponseEntity.ok(recipes);
     }
 
@@ -56,9 +74,9 @@ public class RecipeController {
            @RequestParam("calories") int calories,
            @RequestParam("fat") double fat,
            @RequestParam("carbohydrates") double carbohydrates,
-           @RequestParam("protein") double protein
-           //@RequestParam("image") MultipartFile image
-    )  {
+           @RequestParam("protein") double protein,
+           @RequestParam("image") MultipartFile image
+    ) throws IOException {
         Recipe newRecipe = new Recipe();
         newRecipe.setName(name);
         newRecipe.setDescription(description);
@@ -71,20 +89,29 @@ public class RecipeController {
         newRecipe.setCarbohydrates(carbohydrates);
         newRecipe.setProtein(protein);
         Optional<User> user = userRepository.findByEmail(userDetails.getUsername());
-        Recipe createdRecipe= null;
+        Recipe createdRecipe = null;
         if(user.isPresent()){
             newRecipe.setUser(user.get());
-             createdRecipe = recipeRepository.save(newRecipe);
+
+            createdRecipe = recipeRepository.save(newRecipe);
+
+            if (!image.isEmpty()) {
+                // Save or process the image
+                System.out.println("test");
+
+                RecipeImage newRecipeImage= RecipeImage.builder()
+                        .image(image.getBytes()).recipe(createdRecipe).build();
+                String imageUrl = "images/" + newRecipeImage.getId();
+                String fileExtension = image.getOriginalFilename(); // Get the file extension from the original file name
+                String fileName = System.currentTimeMillis() + "_" + UUID.randomUUID().toString() + fileExtension;
+                newRecipeImage.setImageUrl(fileName);
+                RecipeImage createdImage =recipeImageRepository.save(newRecipeImage);
+                //newRecipe.getImages().add(createdImage);
+
+
+            }
 
         }
-//        if (!image.isEmpty()) {
-//            // Save or process the image
-//            RecipeImage newRecipeImage= RecipeImage.builder()
-//                    .image(ImageUtil.compressImage(image.getBytes())).build();
-//            List<RecipeImage> recipeImageList = new ArrayList<>();
-//            recipeImageList.add(newRecipeImage);
-//            newRecipe.setImages(recipeImageList);
-//        }
 
 
         // Save the recipe using the service class

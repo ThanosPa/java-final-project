@@ -2,6 +2,7 @@ package com.booleanuk.recipes.controller;
 
 import com.booleanuk.recipes.model.Recipe;
 import com.booleanuk.recipes.model.RecipeCollection;
+import com.booleanuk.recipes.model.RecipeImage;
 import com.booleanuk.recipes.model.User;
 import com.booleanuk.recipes.repository.RecipeCollectionRepository;
 import com.booleanuk.recipes.repository.UserRepository;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/users")
@@ -68,6 +70,12 @@ public class UserController {
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             List<Recipe> recipes = user.getRecipes();
+            for (Recipe recipe : recipes) {
+                List<String> imageUrls = recipe.getImages().stream()
+                        .map(RecipeImage::getImageUrl)
+                        .collect(Collectors.toList());
+                recipe.setImageUrls(imageUrls);
+            }
             return ResponseEntity.ok(recipes);
         } else {
             return ResponseEntity.notFound().build();
